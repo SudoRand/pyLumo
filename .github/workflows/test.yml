@@ -1,0 +1,73 @@
+name: Test pylumo
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ['3.12']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        shell: bash
+
+      - name: Sync dependencies
+        run: |
+          uv sync
+        shell: bash
+
+      - name: Install linting tools
+        run: |
+          uv pip install flake8
+        shell: bash
+
+      - name: Lint code (PEP8)
+        run: |
+          uv run flake8 src/pylumo/pylumo.py src/pylumo/pylumo_tui.py src/pylumo/_pylumo_debug.py src/pylumo/_pylumo_tui_modals.py tests/test_pylumo.py
+        shell: bash
+
+      - name: Run tests
+        run: |
+          uv run python tests/test_pylumo.py
+        shell: bash
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build tools
+        run: |
+          pip install build
+
+      - name: Build package
+        run: |
+          python -m build
+
+      - name: Check package
+        run: |
+          pip install dist/*.whl
+          pylumo --help || true
+          pylumo-tui --help || true

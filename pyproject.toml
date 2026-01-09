@@ -1,0 +1,109 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pylumo"
+dynamic = ["version"]
+description = "A Python client and TUI for the Lumo Proton API with hybrid encryption"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "GPL-3.0-or-later"}
+authors = [
+    {name = "Mindgard", email = "support@mindgard.ai"},
+]
+maintainers = [
+    {name = "Mindgard", email = "support@mindgard.ai"},
+]
+keywords = [
+    "lumo",
+    "proton",
+    "ai",
+    "chat",
+    "encryption",
+    "aes-gcm",
+    "pgp",
+    "tui",
+    "terminal",
+    "cli",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Communications :: Chat",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Terminals",
+]
+
+dependencies = [
+    "keyring>=24.0.0",
+    "urllib3<2.0",
+    "requests>=2.31.0",
+    "pycryptodome>=3.15.0",
+    "pgpy>=0.6.0",
+    "standard-imghdr; python_version >= '3.13'",
+    "pygments>=2.14.0",
+    "bcrypt>=4.0.0",
+    "python-gnupg>=0.5.0",
+    "pyopenssl>=23.0.0",
+]
+
+[project.optional-dependencies]
+tui = [
+    "textual>=0.47.0",
+    "rich>=13.0.0",
+    "textual-image>=0.3.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "pyflakes>=3.0.0",
+]
+all = [
+    "pylumo[tui,dev]",
+]
+
+[project.urls]
+Homepage = "https://github.com/Mindgard/pylumo"
+Documentation = "https://github.com/Mindgard/pylumo/blob/main/README.md"
+Repository = "https://github.com/Mindgard/pylumo"
+Issues = "https://github.com/Mindgard/pylumo/issues"
+
+[project.scripts]
+pylumo = "pylumo.pylumo:main"
+pylumo-tui = "pylumo.pylumo_tui:main"
+
+[tool.hatch.version]
+path = "src/pylumo/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pylumo"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/pylumo/",
+    "LICENSE",
+    "README.md",
+    "pyproject.toml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+filterwarnings = [
+    "ignore::cryptography.utils.CryptographyDeprecationWarning",
+    "ignore:'imghdr' is deprecated:DeprecationWarning",
+]
+
+[tool.pyflakes]
+exclude = ["__pycache__", ".git", "build", "dist"]

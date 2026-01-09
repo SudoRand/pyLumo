@@ -1,0 +1,990 @@
+/* pyLumo TUI Styles - Purple and Yellow Color Scheme */
+
+Screen {
+    background: #1a1a2e;
+}
+
+/* Hide content container initially to prevent flash before splash screen */
+#content-container.hidden {
+    display: none;
+}
+
+Header {
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+Footer {
+    background: #16213e;
+}
+
+#chat-container {
+    height: 1fr;
+    background: #0f0f1e;
+    border: solid #9d4edd;
+    padding: 1 2;
+}
+
+.message {
+    margin: 1 0;
+    padding: 1 2;
+}
+
+.user-message {
+    background: #3d2c00;
+    border-left: thick #ffd60a;
+}
+
+.system-message {
+    background: #002b36;
+    border-left: thick #00d9ff;
+}
+
+.assistant-message {
+    background: #240046;
+    border-left: thick #9d4edd;
+}
+
+.message-header {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.message-markdown {
+    padding-top: 1;
+    margin-top: 0;
+}
+
+.message-content {
+    padding-top: 1;
+    margin-top: 0;
+}
+
+.loading-indicator {
+    background: #240046;
+    border-left: thick #9d4edd;
+    color: #9d4edd;
+}
+
+#input-container {
+    height: auto;
+    background: #16213e;
+    padding: 1 2;
+}
+
+#prompt-input {
+    width: 1fr;
+    background: #0f0f1e;
+    border: solid #9d4edd;
+    color: #ffffff;
+}
+
+#prompt-input:focus {
+    border: solid #ffd60a;
+}
+
+#send-button {
+    min-width: 10;
+    margin-left: 1;
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+#send-button:hover {
+    background: #c77dff;
+}
+
+#upload-button {
+    min-width: 10;
+    margin-left: 1;
+}
+
+#status-container {
+    height: 1;
+    background: #16213e;
+}
+
+#status-bar {
+    width: 1fr;
+    height: 1;
+    background: #16213e;
+    color: #ffd60a;
+    padding: 0 2;
+}
+
+#token-counter {
+    width: auto;
+    height: 1;
+    background: #16213e;
+    padding: 0 2;
+}
+
+Button {
+    margin: 0 1;
+}
+
+/* About Modal Styles */
+AboutModal {
+    align: center middle;
+}
+
+#about-dialog {
+    width: 80;
+    height: auto;
+    background: #0f0f1e;
+    border: thick #9d4edd;
+    padding: 2 4;
+}
+
+#about-title {
+    text-align: center;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#about-subtitle {
+    text-align: center;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#about-content {
+    margin-bottom: 1;
+    color: #ffffff;
+}
+
+#close-button {
+    width: 100%;
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+#close-button:hover {
+    background: #c77dff;
+}
+
+/* Quit Confirm Modal Styles */
+QuitConfirmModal {
+    align: center middle;
+}
+
+#quit-confirm-dialog {
+    width: 50;
+    height: auto;
+    background: #0f0f1e;
+    border: thick #ffd60a;
+    padding: 2 4;
+}
+
+#quit-confirm-title {
+    text-align: center;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#quit-confirm-content {
+    margin-bottom: 2;
+    text-align: center;
+    color: #ffffff;
+}
+
+#quit-confirm-buttons {
+    width: 100%;
+    height: auto;
+    align: center middle;
+}
+
+#quit-confirm-buttons Button {
+    margin: 0 1;
+    min-width: 15;
+}
+
+#confirm-quit-button {
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+#confirm-quit-button:hover {
+    background: #c77dff;
+}
+
+#cancel-quit-button {
+    background: #ffd60a;
+    color: #1a1a2e;
+}
+
+#cancel-quit-button:hover {
+    background: #ffed4e;
+}
+
+/* Clear Chat Confirm Modal Styles */
+ClearChatConfirmModal {
+    align: center middle;
+}
+
+#clear-confirm-dialog {
+    width: 50;
+    height: auto;
+    background: #0f0f1e;
+    border: thick #ffd60a;
+    padding: 2 4;
+}
+
+#clear-confirm-title {
+    text-align: center;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#clear-confirm-content {
+    margin-bottom: 2;
+    text-align: center;
+    color: #ffffff;
+}
+
+#clear-confirm-buttons {
+    width: 100%;
+    height: auto;
+    align: center middle;
+}
+
+#clear-confirm-buttons Button {
+    margin: 0 1;
+    min-width: 15;
+}
+
+#confirm-clear-button {
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+#confirm-clear-button:hover {
+    background: #c77dff;
+}
+
+#cancel-clear-button {
+    background: #ffd60a;
+    color: #1a1a2e;
+}
+
+#cancel-clear-button:hover {
+    background: #ffed4e;
+}
+
+/* Logout Confirm Modal Styles */
+LogoutConfirmModal {
+    align: center middle;
+}
+
+#logout-confirm-dialog {
+    width: 50;
+    height: auto;
+    background: #0f0f1e;
+    border: thick #ffd60a;
+    padding: 2 4;
+}
+
+#logout-confirm-title {
+    text-align: center;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#logout-confirm-content {
+    margin-bottom: 2;
+    text-align: center;
+    color: #ffffff;
+}
+
+#logout-confirm-buttons {
+    width: 100%;
+    height: auto;
+    align: center middle;
+}
+
+#logout-confirm-buttons Button {
+    margin: 0 1;
+    min-width: 15;
+}
+
+#confirm-logout-button {
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+#confirm-logout-button:hover {
+    background: #c77dff;
+}
+
+#cancel-logout-button {
+    background: #ffd60a;
+    color: #1a1a2e;
+}
+
+#cancel-logout-button:hover {
+    background: #ffed4e;
+}
+
+/* Save Chat Modal Styles */
+SaveChatModal {
+    align: center middle;
+}
+
+#save-chat-dialog {
+    width: 60;
+    height: auto;
+    background: #0f0f1e;
+    border: thick #9d4edd;
+    padding: 2 4;
+}
+
+#save-chat-title {
+    text-align: center;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#save-chat-content {
+    margin-bottom: 1;
+    text-align: center;
+    color: #ffffff;
+}
+
+#save-filename-input {
+    width: 100%;
+    margin-bottom: 2;
+    background: #0f0f1e;
+    border: solid #9d4edd;
+    color: #ffffff;
+}
+
+#save-filename-input:focus {
+    border: solid #ffd60a;
+}
+
+#save-chat-buttons {
+    width: 100%;
+    height: auto;
+    align: center middle;
+}
+
+#save-chat-buttons Button {
+    margin: 0 1;
+    min-width: 15;
+}
+
+#save-file-button {
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+#save-file-button:hover {
+    background: #c77dff;
+}
+
+#cancel-save-button {
+    background: #ffd60a;
+    color: #1a1a2e;
+}
+
+#cancel-save-button:hover {
+    background: #ffed4e;
+}
+
+/* Save Debug Modal Styles */
+SaveDebugModal {
+    align: center middle;
+}
+
+#save-debug-dialog {
+    width: 60;
+    height: auto;
+    background: #0f0f1e;
+    border: thick #9d4edd;
+    padding: 2 4;
+}
+
+#save-debug-title {
+    text-align: center;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#save-debug-content {
+    margin-bottom: 1;
+    text-align: center;
+    color: #ffffff;
+}
+
+#save-debug-filename-input {
+    width: 100%;
+    margin-bottom: 2;
+    background: #0f0f1e;
+    border: solid #9d4edd;
+    color: #ffffff;
+}
+
+#save-debug-filename-input:focus {
+    border: solid #ffd60a;
+}
+
+#save-debug-buttons {
+    width: 100%;
+    height: auto;
+    align: center middle;
+}
+
+#save-debug-buttons Button {
+    margin: 0 1;
+    min-width: 15;
+}
+
+#save-debug-file-button {
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+#save-debug-file-button:hover {
+    background: #c77dff;
+}
+
+#cancel-debug-save-button {
+    background: #ffd60a;
+    color: #1a1a2e;
+}
+
+#cancel-debug-save-button:hover {
+    background: #ffed4e;
+}
+
+/* File Browser Modal Styles */
+FileBrowserModal {
+    align: center middle;
+}
+
+#file-browser-dialog {
+    width: 80;
+    height: auto;
+    max-height: 90%;
+    background: #0f0f1e;
+    border: thick #9d4edd;
+    padding: 1 2;
+}
+
+#file-browser-title {
+    text-align: center;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#file-tree {
+    height: 15;
+    border: solid #9d4edd;
+    margin-bottom: 1;
+}
+
+#dir-nav-label {
+    color: #ffd60a;
+    margin-top: 1;
+    margin-bottom: 0;
+}
+
+#dir-nav-container {
+    height: auto;
+    margin-bottom: 1;
+}
+
+#dir-path-input {
+    width: 1fr;
+    background: #0f0f1e;
+    border: solid #9d4edd;
+    color: #ffffff;
+}
+
+#dir-path-input:focus {
+    border: solid #ffd60a;
+}
+
+#go-dir-button {
+    min-width: 8;
+    margin-left: 1;
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+#go-dir-button:hover {
+    background: #c77dff;
+}
+
+#dir-nav-status {
+    height: 2;
+    margin-bottom: 1;
+    text-align: center;
+}
+
+#file-browser-buttons {
+    height: auto;
+    align: center middle;
+}
+
+#file-browser-buttons Button {
+    margin: 0 1;
+}
+
+#select-file-button {
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+#select-file-button:hover {
+    background: #c77dff;
+}
+
+/* File List Styles */
+#file-list-container {
+    height: auto;
+    background: #16213e;
+    padding: 1 2;
+    margin-bottom: 0;
+}
+
+.file-item {
+    color: #ffd60a;
+    margin: 0 1 0 0;
+}
+
+#main-container {
+    height: 100%;
+    width: 100%;
+}
+
+#content-container {
+    width: 1fr;
+    height: 100%;
+}
+
+#debug-panel {
+    width: 0;
+    height: 100%;
+    background: #0f0f1e;
+    border-left: thick #9d4edd;
+}
+
+#debug-panel-title {
+    background: #16213e;
+    padding: 1 2;
+    text-align: center;
+    color: #9d4edd;
+}
+
+/* File Attachments Container */
+.file-attachments-container {
+    height: auto;
+    margin: 1 0;
+    padding: 0 1;
+}
+
+/* File Preview Button Styles */
+.file-preview-button {
+    margin: 0 1 0 0;
+    background: #240046;
+    border: solid #9d4edd;
+    color: #ffd60a;
+    min-width: 15;
+}
+
+.file-preview-button:hover {
+    background: #3d2c00;
+    border: solid #ffd60a;
+}
+
+/* Inline Image Styles */
+.inline-image {
+    width: auto;
+    height: auto;
+    max-height: 40;
+    margin: 1 0;
+    border: solid #9d4edd;
+}
+
+/* Image View Button Styles (fallback) */
+.image-view-button {
+    margin: 1 0;
+    background: #240046;
+    border: solid #9d4edd;
+    color: #ffd60a;
+}
+
+.image-view-button:hover {
+    background: #3d2c00;
+    border: solid #ffd60a;
+}
+
+/* Image View Modal Styles */
+ImageViewModal {
+    align: center middle;
+}
+
+#image-view-dialog {
+    width: 90%;
+    height: 90%;
+    background: #0f0f1e;
+    border: thick #9d4edd;
+    padding: 2 4;
+}
+
+#image-view-title {
+    text-align: center;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#image-scroll-container {
+    width: 100%;
+    height: 1fr;
+    border: solid #9d4edd;
+    margin-bottom: 2;
+}
+
+#image-display {
+    width: auto;
+    height: auto;
+}
+
+#image-error {
+    width: 100%;
+    height: 1fr;
+    margin-bottom: 2;
+    text-align: center;
+}
+
+#close-image-button {
+    width: 100%;
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+#close-image-button:hover {
+    background: #c77dff;
+}
+
+/* File Preview Modal Styles */
+FilePreviewModal {
+    align: center middle;
+}
+
+#file-preview-dialog {
+    width: 90%;
+    height: 85%;
+    background: #16213e;
+    border: thick #9d4edd;
+    padding: 2 4;
+}
+
+#file-preview-title {
+    text-align: center;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#file-preview-scroll {
+    width: 100%;
+    height: 1fr;
+    border: solid #9d4edd;
+    margin-bottom: 2;
+}
+
+#file-preview-image {
+    width: auto;
+    height: auto;
+}
+
+#file-preview-text {
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+}
+
+#file-preview-info {
+    width: 100%;
+    height: 1fr;
+    margin-bottom: 2;
+    padding: 2;
+    text-align: center;
+}
+
+#file-preview-error {
+    width: 100%;
+    height: 1fr;
+    margin-bottom: 2;
+    text-align: center;
+}
+
+#close-preview-button {
+    width: 100%;
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+#close-preview-button:hover {
+    background: #c77dff;
+}
+
+/* Login Modal Styles */
+LoginModal {
+    align: center middle;
+}
+
+#login-dialog {
+    width: 60;
+    height: auto;
+    background: #1a1a2e;
+    border: thick #9d4edd;
+    padding: 2 4;
+}
+
+#login-title {
+    text-align: center;
+    margin-bottom: 1;
+}
+
+#login-description {
+    color: #a0a0a0;
+    text-align: center;
+    margin-bottom: 2;
+}
+
+.login-label {
+    color: #ffd60a;
+    margin-top: 1;
+    margin-bottom: 0;
+}
+
+#login-email, #login-password {
+    width: 100%;
+    margin-bottom: 1;
+    background: #0f0f1e;
+    border: solid #9d4edd;
+}
+
+#login-email:focus, #login-password:focus {
+    border: solid #c77dff;
+}
+
+#login-status {
+    height: 2;
+    text-align: center;
+    margin-top: 1;
+}
+
+#login-buttons {
+    width: 100%;
+    height: auto;
+    align: center middle;
+    margin-top: 1;
+}
+
+#login-button {
+    width: 1fr;
+    background: #9d4edd;
+    color: #ffffff;
+    margin-right: 1;
+}
+
+#login-button:hover {
+    background: #c77dff;
+}
+
+#cancel-login-button {
+    width: 1fr;
+    background: #3a3a3a;
+    color: #ffffff;
+}
+
+#cancel-login-button:hover {
+    background: #5a5a5a;
+}
+
+/* ===== 2FA Modal Styles ===== */
+
+#twofa-dialog {
+    width: 60;
+    height: auto;
+    background: #1a1a2e;
+    border: thick #9d4edd;
+    padding: 2 4;
+}
+
+#twofa-title {
+    text-align: center;
+    margin-bottom: 1;
+}
+
+#twofa-description {
+    color: #a0a0a0;
+    text-align: left;
+    margin-bottom: 2;
+}
+
+.twofa-label {
+    color: #ffd60a;
+    margin-top: 1;
+    margin-bottom: 0;
+}
+
+#twofa-code {
+    width: 100%;
+    margin-bottom: 1;
+    background: #0f0f1e;
+    border: solid #9d4edd;
+}
+
+#twofa-code:focus {
+    border: solid #c77dff;
+}
+
+#twofa-status {
+    height: 2;
+    text-align: center;
+    margin-top: 1;
+}
+
+#twofa-buttons {
+    width: 100%;
+    height: auto;
+    align: center middle;
+    margin-top: 1;
+}
+
+#verify-button {
+    width: 1fr;
+    background: #9d4edd;
+    color: #ffffff;
+    margin-right: 1;
+}
+
+#verify-button:hover {
+    background: #c77dff;
+}
+
+#cancel-twofa-button {
+    width: 1fr;
+    background: #3a3a3a;
+    color: #ffffff;
+}
+
+#cancel-twofa-button:hover {
+    background: #5a5a5a;
+}
+
+/* Tools Modal Styles */
+ToolsModal {
+    align: center middle;
+}
+
+#tools-dialog {
+    width: 50;
+    height: auto;
+    background: #0f0f1e;
+    border: thick #9d4edd;
+    padding: 2 4;
+}
+
+#tools-title {
+    text-align: center;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#tools-description {
+    margin-bottom: 1;
+    color: #ffffff;
+}
+
+#tools-dialog Checkbox {
+    margin: 0 0 1 0;
+    background: #16213e;
+    color: #ffffff;
+}
+
+#tools-note {
+    margin-top: 1;
+    margin-bottom: 2;
+    text-align: center;
+    color: #a0a0a0;
+}
+
+#tools-buttons {
+    width: 100%;
+    height: auto;
+    align: center middle;
+}
+
+#tools-buttons Button {
+    margin: 0 1;
+    min-width: 15;
+}
+
+#apply-tools-button {
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+#apply-tools-button:hover {
+    background: #c77dff;
+}
+
+#cancel-tools-button {
+    background: #ffd60a;
+    color: #1a1a2e;
+}
+
+#cancel-tools-button:hover {
+    background: #ffed4e;
+}
+
+#tools-button {
+    min-width: 10;
+    margin-left: 1;
+}
+
+/* Splash Screen Modal Styles */
+SplashScreenModal {
+    align: center middle;
+}
+
+#splash-container {
+    width: 59;
+    height: auto;
+    background: #000000;
+    border: thick #9d4edd;
+    padding: 2;
+}
+
+#splash-image {
+    /* Size controlled by widget styles */
+    background: #000000;
+}
+
+#splash-text {
+    text-align: center;
+    padding: 1 0;
+    color: #ffd60a;
+    background: #000000;
+    width: 100%;
+}
+
+#splash-version {
+    text-align: center;
+    padding: 0;
+    color: #c77dff;
+    background: #000000;
+    width: 100%;
+}
+
+#splash-fallback {
+    text-align: center;
+    padding: 4;
+    color: #9d4edd;
+    background: #000000;
+}
