@@ -349,6 +349,16 @@ class pyLumo:
                 self.output_file = None
                 self.output_file_handle = None
 
+    def close(self) -> None:
+        """Close any open file handles and clean up resources."""
+        if self.output_file_handle:
+            try:
+                self.output_file_handle.close()
+            except Exception:
+                pass
+            finally:
+                self.output_file_handle = None
+
     def _load_lumo_public_key(self) -> str:
         """Load the Lumo public PGP key.
 
@@ -1367,6 +1377,9 @@ class pyLumo:
 
                         elif msg_type == ResponseMessageType.DONE.value:
                             # Generation completed successfully
+                            if self.output_file_handle:
+                                self.output_file_handle.write("\n")
+                                self.output_file_handle.flush()
                             if not self.quiet_mode:
                                 print()  # New line after streaming
 
@@ -1464,8 +1477,12 @@ class pyLumo:
                             ):
                                 stream_callback(target, decrypted_content)
 
-                            if target == "message" and not self.quiet_mode:
-                                print(decrypted_content, end="", flush=True)
+                            if target == "message":
+                                if self.output_file_handle:
+                                    self.output_file_handle.write(decrypted_content)
+                                    self.output_file_handle.flush()
+                                if not self.quiet_mode:
+                                    print(decrypted_content, end="", flush=True)
 
                     except json.JSONDecodeError:
                         if not self.quiet_mode:
@@ -1648,20 +1665,24 @@ def main() -> None:
             output_file=args.output,
         )
 
-    # Send request with file upload if -u option is provided
-    if args.upload:
-        client.send_request_with_file(
-            prompt=prompt,
-            file_path=args.upload,
-            tools=args.tools,
-            targets=args.targets,
-        )
-    else:
-        client.send_request(
-            prompt=prompt,
-            tools=args.tools,
-            targets=args.targets,
-        )
+    try:
+        # Send request with file upload if -u option is provided
+        if args.upload:
+            client.send_request_with_file(
+                prompt=prompt,
+                file_path=args.upload,
+                tools=args.tools,
+                targets=args.targets,
+            )
+        else:
+            client.send_request(
+                prompt=prompt,
+                tools=args.tools,
+                targets=args.targets,
+            )
+    finally:
+        # Close any open file handles
+        client.close()
 
 
 if __name__ == "__main__":

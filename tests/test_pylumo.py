@@ -36,6 +36,16 @@ except Exception:
 # Note: _pylumo_debug is internal, tests use base pyLumo class
 
 
+def _encrypt_response_chunk(aes_key: bytes, request_id: str, plaintext: str) -> str:
+    """Helper to encrypt a response chunk for mock responses."""
+    iv = get_random_bytes(12)
+    aead_data = f"lumo.response.{request_id}.chunk".encode("utf-8")
+    cipher_aes = AES.new(aes_key, AES.MODE_GCM, nonce=iv)
+    cipher_aes.update(aead_data)
+    ciphertext, tag = cipher_aes.encrypt_and_digest(plaintext.encode("utf-8"))
+    return base64.b64encode(iv + ciphertext + tag).decode("utf-8")
+
+
 class TestPyLumoEncryption(unittest.TestCase):
     """Test encryption and decryption functionality."""
 
@@ -182,15 +192,6 @@ class TestPyLumoResponseParsing(unittest.TestCase):
         """Set up test client."""
         self.client = pyLumo(quiet_mode=True)
 
-    def _encrypt_response_chunk(self, aes_key: bytes, request_id: str, plaintext: str) -> str:
-        """Encrypt a response chunk -- compatibility with internal encryption"""
-        iv = get_random_bytes(12)
-        aead_data = f"lumo.response.{request_id}.chunk".encode("utf-8")
-        cipher_aes = AES.new(aes_key, AES.MODE_GCM, nonce=iv)
-        cipher_aes.update(aead_data)
-        ciphertext, tag = cipher_aes.encrypt_and_digest(plaintext.encode("utf-8"))
-        return base64.b64encode(iv + ciphertext + tag).decode("utf-8")
-
     def test_parse_token_data(self):
         """Test parsing token_data events."""
         # Create mock response with streaming data
@@ -201,8 +202,8 @@ class TestPyLumoResponseParsing(unittest.TestCase):
         request_id = "test-request-id"
         _, aes_key = self.client.create_request_payload("test", [], ["message"])
 
-        enc_hello = self._encrypt_response_chunk(aes_key, request_id, "Hello")
-        enc_world = self._encrypt_response_chunk(aes_key, request_id, " World")
+        enc_hello = _encrypt_response_chunk(aes_key, request_id, "Hello")
+        enc_world = _encrypt_response_chunk(aes_key, request_id, " World")
         mock_response.iter_lines = Mock(
             return_value=[
                 f'data:{{"type":"token_data","target":"message","count":0,"content":"{enc_hello}"}}'.encode("utf-8"),
@@ -229,8 +230,8 @@ class TestPyLumoResponseParsing(unittest.TestCase):
             "test", [], ["title", "message"]
         )
 
-        enc_title = self._encrypt_response_chunk(aes_key, request_id, "Title")
-        enc_message = self._encrypt_response_chunk(aes_key, request_id, "Message")
+        enc_title = _encrypt_response_chunk(aes_key, request_id, "Title")
+        enc_message = _encrypt_response_chunk(aes_key, request_id, "Message")
         mock_response.iter_lines = Mock(
             return_value=[
                 f'data:{{"type":"token_data","target":"title","count":0,"content":"{enc_title}"}}'.encode('utf-8'),
@@ -257,7 +258,7 @@ class TestPyLumoResponseParsing(unittest.TestCase):
 
         request_id = "test-id"
         _, aes_key = self.client.create_request_payload("test", [], ["message"])
-        enc_valid = self._encrypt_response_chunk(aes_key, request_id, "Valid")
+        enc_valid = _encrypt_response_chunk(aes_key, request_id, "Valid")
         mock_response.iter_lines = Mock(
             return_value=[
                 b"data:invalid json",
@@ -283,8 +284,8 @@ class TestPyLumoResponseParsing(unittest.TestCase):
         request_id = "test-id"
         _, aes_key = self.client.create_request_payload("test", [], ["message"])
 
-        enc_hello = self._encrypt_response_chunk(aes_key, request_id, "Hello")
-        enc_world = self._encrypt_response_chunk(aes_key, request_id, " World")
+        enc_hello = _encrypt_response_chunk(aes_key, request_id, "Hello")
+        enc_world = _encrypt_response_chunk(aes_key, request_id, " World")
 
         decoded = bytearray(base64.b64decode(enc_world))
         decoded[-1] ^= 0x01
@@ -315,7 +316,7 @@ class TestPyLumoResponseParsing(unittest.TestCase):
         request_id = "test-id"
         _, aes_key = self.client.create_request_payload("test", [], ["message"])
 
-        enc = self._encrypt_response_chunk(aes_key, request_id, "Hello")
+        enc = _encrypt_response_chunk(aes_key, request_id, "Hello")
         decoded = bytearray(base64.b64decode(enc))
         decoded[-1] ^= 0x01
         enc_tampered = base64.b64encode(bytes(decoded)).decode("utf-8")
@@ -508,16 +509,60 @@ class TestPyLumoOutputFile(unittest.TestCase):
         with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
             temp_path = f.name
 
+        client = None
         try:
             client = pyLumo(quiet_mode=True, output_file=temp_path)
             self.assertEqual(client.output_file, temp_path)
+            self.assertIsNotNone(client.output_file_handle)
         finally:
-            try:
-                if "client" in locals() and getattr(client, "output_file_handle", None):
-                    client.output_file_handle.close()
-                    client.output_file_handle = None
-            except Exception:
-                pass
+            if client and getattr(client, "output_file_handle", None):
+                client.close()
+            if os.path.exists(temp_path):
+                os.unlink(temp_path)
+
+    def test_output_file_is_written_to(self):
+        """Test that streaming response content is written to the output file."""
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False, encoding="utf-8") as f:
+            temp_path = f.name
+
+        client = pyLumo(quiet_mode=True, output_file=temp_path)
+        try:
+            mock_response = Mock()
+            mock_response.raise_for_status = Mock()
+            mock_response.close = Mock()
+
+            request_id = "test-output-file-id"
+            _, aes_key = client.create_request_payload("test", [], ["message"])
+
+            enc_part1 = _encrypt_response_chunk(aes_key, request_id, "This content ")
+            enc_part2 = _encrypt_response_chunk(aes_key, request_id, "should be in the file.")
+
+            mock_response.iter_lines = Mock(
+                return_value=[
+                    f'data:{{"type":"token_data","target":"message","count":0,"content":"{enc_part1}"}}'.encode("utf-8"),
+                    f'data:{{"type":"token_data","target":"message","count":1,"content":"{enc_part2}"}}'.encode('utf-8'),
+                    b'data:{"type":"done","target":"message"}',
+                ]
+            )
+
+            client.parse_streaming_response(
+                mock_response, datetime.now(), aes_key, request_id
+            )
+
+            client.close()
+
+            with open(temp_path, "r", encoding="utf-8") as f:
+                content = f.read()
+
+            # The streaming parser adds a newline at the end of output.
+            self.assertEqual(content, "This content should be in the file.\n")
+
+        finally:
+            if getattr(client, "output_file_handle", None):
+                try:
+                    client.close()
+                except:
+                    pass
             if os.path.exists(temp_path):
                 os.unlink(temp_path)
 
