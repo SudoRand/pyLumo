@@ -1388,26 +1388,22 @@ class pyLumo:
 
                         elif msg_type == ResponseMessageType.TIMEOUT.value:
                             # Request timed out
-                            if not self.quiet_mode:
-                                print("\n\033[33mWARNING:\033[0m Request timed out", file=sys.stderr)
+                            print("\n\033[33mWARNING:\033[0m Request timed out", file=sys.stderr)
                             content_by_target["_error"] = "timeout"
 
                         elif msg_type == ResponseMessageType.ERROR.value:
                             # An error occurred during generation
-                            if not self.quiet_mode:
-                                print("\n\033[31mERROR:\033[0m Generation error occurred", file=sys.stderr)
+                            print("\n\033[31mERROR:\033[0m Generation error occurred", file=sys.stderr)
                             content_by_target["_error"] = "generation_error"
 
                         elif msg_type == ResponseMessageType.REJECTED.value:
                             # Request was rejected (e.g., policy violation)
-                            if not self.quiet_mode:
-                                print("\n\033[31mREJECTED:\033[0m Request was rejected", file=sys.stderr)
+                            print("\n\033[31mREJECTED:\033[0m Request was rejected", file=sys.stderr)
                             content_by_target["_error"] = "rejected"
 
                         elif msg_type == ResponseMessageType.HARMFUL.value:
                             # Content was flagged as potentially harmful
-                            if not self.quiet_mode:
-                                print("\n\033[31mHARMFUL:\033[0m Content flagged as potentially harmful", file=sys.stderr)
+                            print("\n\033[31mHARMFUL:\033[0m Content flagged as potentially harmful", file=sys.stderr)
                             content_by_target["_error"] = "harmful_content"
 
                         elif msg_type == ResponseMessageType.TOKEN_DATA.value:
