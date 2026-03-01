@@ -1484,8 +1484,7 @@ class pyLumo:
                                 if self.output_file_handle:
                                     self.output_file_handle.write(decrypted_content)
                                     self.output_file_handle.flush()
-                                if not self.quiet_mode:
-                                    print(decrypted_content, end="", flush=True)
+                                print(decrypted_content, end="", flush=True)
 
                     except json.JSONDecodeError:
                         if not self.quiet_mode:
