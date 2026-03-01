@@ -505,34 +505,35 @@ class pyLumo:
         # Check if 2FA is required by looking for 'twofactor' in scopes
         current_scope = self.proton_session.Scope
         if "twofactor" in current_scope and last_auth_response[0]:
-            print("\nTwo-Factor Authentication Required")
-            print("=" * 60)
+            print("\nTwo-Factor Authentication Required", file=sys.stderr)
+            print("=" * 60, file=sys.stderr)
 
             # Show 2FA methods available
             twofa_info = last_auth_response[0].get("2FA", {})
             if twofa_info.get("TOTP") == 1:
-                print("  Available: TOTP (Authenticator App)")
+                print("  Available: TOTP (Authenticator App)", file=sys.stderr)
             if twofa_info.get("FIDO2"):
                 fido_keys = twofa_info["FIDO2"].get("RegisteredKeys", [])
                 if fido_keys:
-                    print(f"  Available: FIDO2/U2F ({len(fido_keys)} security key(s))")
+                    print(f"  Available: FIDO2/U2F ({len(fido_keys)} security key(s))", file=sys.stderr)
                     for key in fido_keys:
-                        print(f"    - {key.get('Name', 'Unknown key')}")
+                        print(f"    - {key.get('Name', 'Unknown key')}", file=sys.stderr)
 
-            print(f"\n  Current scope (limited): {', '.join(current_scope)}")
-            print("  Full scope requires 2FA verification")
+            print(f"\n  Current scope (limited): {', '.join(current_scope)}", file=sys.stderr)
+            print("  Full scope requires 2FA verification", file=sys.stderr)
 
             # Prompt for 2FA code
             import getpass
 
-            print()
+            print(file=sys.stderr)
             twofa_code = getpass.getpass("Enter 2FA code (TOTP): ")
 
             try:
-                print("\nSubmitting 2FA code...")
+                print("\nSubmitting 2FA code...", file=sys.stderr)
                 updated_scope = self.proton_session.provide_2fa(twofa_code)
-                print(f"2FA successful! Updated scope: {updated_scope}")
-                print("=" * 60)
+                print(f"2FA successful! Updated scope: {updated_scope}", file=sys.stderr)
+                print("=" * 60, file=sys.stderr)
+
             except Exception as e:
                 raise ValueError(f"2FA verification failed: {e}")
 
@@ -888,6 +889,7 @@ class pyLumo:
                 print(
                     f"\n\033[33mAUTO-TRIM:\033[0m Context limit approaching "
                     f"({current_tokens:,} tokens). Trimming old messages...",
+                    file=sys.stderr,
                     flush=True
                 )
 
@@ -896,6 +898,7 @@ class pyLumo:
             print(
                 f"\033[33mAUTO-TRIM:\033[0m Removed {turns_removed} old turn(s). "
                 f"New context size: {final_tokens:,} tokens\n",
+                file=sys.stderr,
                 flush=True
             )
 
@@ -1303,7 +1306,7 @@ class pyLumo:
 
             return content_by_target
         except Exception as e:
-            print(f"\n\033[1;31mERROR:\033[0m Request failed: {e}")
+            print(f"\n\033[1;31mERROR:\033[0m Request failed: {e}", file=sys.stderr)
             return {}
 
     def _print_final_summary(
@@ -1367,13 +1370,13 @@ class pyLumo:
                         if msg_type == ResponseMessageType.QUEUED.value:
                             # Request is queued, waiting to be processed
                             if not self.quiet_mode:
-                                print("\r⏳ Request queued...", end="", flush=True)
+                                print("\r⏳ Request queued...", end="", file=sys.stderr, flush=True)
 
                         elif msg_type == ResponseMessageType.INGESTING.value:
                             # Server is processing the request
                             target = data.get("target", "unknown")
                             if not self.quiet_mode:
-                                print(f"\r🔄 Processing ({target})...", end="", flush=True)
+                                print(f"\r🔄 Processing ({target})...", end="", file=sys.stderr, flush=True)
 
                         elif msg_type == ResponseMessageType.DONE.value:
                             # Generation completed successfully
@@ -1381,30 +1384,30 @@ class pyLumo:
                                 self.output_file_handle.write("\n")
                                 self.output_file_handle.flush()
                             if not self.quiet_mode:
-                                print()  # New line after streaming
+                                print(file=sys.stderr)  # New line after streaming
 
                         elif msg_type == ResponseMessageType.TIMEOUT.value:
                             # Request timed out
                             if not self.quiet_mode:
-                                print("\n\033[33mWARNING:\033[0m Request timed out")
+                                print("\n\033[33mWARNING:\033[0m Request timed out", file=sys.stderr)
                             content_by_target["_error"] = "timeout"
 
                         elif msg_type == ResponseMessageType.ERROR.value:
                             # An error occurred during generation
                             if not self.quiet_mode:
-                                print("\n\033[31mERROR:\033[0m Generation error occurred")
+                                print("\n\033[31mERROR:\033[0m Generation error occurred", file=sys.stderr)
                             content_by_target["_error"] = "generation_error"
 
                         elif msg_type == ResponseMessageType.REJECTED.value:
                             # Request was rejected (e.g., policy violation)
                             if not self.quiet_mode:
-                                print("\n\033[31mREJECTED:\033[0m Request was rejected")
+                                print("\n\033[31mREJECTED:\033[0m Request was rejected", file=sys.stderr)
                             content_by_target["_error"] = "rejected"
 
                         elif msg_type == ResponseMessageType.HARMFUL.value:
                             # Content was flagged as potentially harmful
                             if not self.quiet_mode:
-                                print("\n\033[31mHARMFUL:\033[0m Content flagged as potentially harmful")
+                                print("\n\033[31mHARMFUL:\033[0m Content flagged as potentially harmful", file=sys.stderr)
                             content_by_target["_error"] = "harmful_content"
 
                         elif msg_type == ResponseMessageType.TOKEN_DATA.value:
@@ -1487,7 +1490,8 @@ class pyLumo:
                     except json.JSONDecodeError:
                         if not self.quiet_mode:
                             print(
-                                f"\n\033[33mWARNING:\033[0m Could not parse JSON data: {json_data[:50]}..."
+                                f"\n\033[33mWARNING:\033[0m Could not parse JSON data: {json_data[:50]}...",
+                                file=sys.stderr
                             )
                         continue
 
@@ -1498,7 +1502,7 @@ class pyLumo:
             # Integrity error occurred ensure it raised and accessible for lib users not swallowed
             raise
         except Exception as e:
-            print(f"\n\033[33mWARNING:\033[0m An error occurred: {e}")
+            print(f"\n\033[33mWARNING:\033[0m An error occurred: {e}", file=sys.stderr)
 
         self._display_http_response_end(content_by_target)
         return content_by_target, timestamps_by_target
