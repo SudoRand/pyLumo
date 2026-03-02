@@ -80,6 +80,7 @@ LogoutConfirmModal = _pylumo_tui_modals.LogoutConfirmModal
 TwoFactorModal = _pylumo_tui_modals.TwoFactorModal
 QuitConfirmModal = _pylumo_tui_modals.QuitConfirmModal
 SaveChatModal = _pylumo_tui_modals.SaveChatModal
+SaveCodeModal = _pylumo_tui_modals.SaveCodeModal
 SaveDebugModal = _pylumo_tui_modals.SaveDebugModal
 SplashScreenModal = _pylumo_tui_modals.SplashScreenModal
 ToolsModal = _pylumo_tui_modals.ToolsModal
@@ -1359,17 +1360,61 @@ class LoadingIndicator(Static):
 
 
 class CustomMarkdownFence(MarkdownFence):
-    """Custom Markdown code block that displays the language name."""
+    """Custom Markdown code block that displays the language name and action buttons."""
     
     def compose(self) -> ComposeResult:
-        # `self.lexer` contains the language string (e.g. "python", "json")
-        language = getattr(self, "lexer", "")
-        if language:
-            # Yield an opening line indicating the language
+        language = getattr(self, "lexer", "") or "text"
+        
+        # Create a horizontal container for the header
+        with Horizontal(classes="markdown-fence-header"):
             yield Label(f" {language} ", classes="markdown-fence-language")
+            yield Button("📋 Copy", variant="primary", classes="markdown-action-button markdown-copy-button")
+            yield Button("💾 Save", variant="default", classes="markdown-action-button markdown-save-button")
             
         # Yield the actual highlighted code content
         yield Label(self._highlighted_code, id="code-content")
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle button presses within the code block."""
+        if event.button.has_class("markdown-copy-button"):
+            code_text = getattr(self, "code", "")
+            if hasattr(self.app, "copy_to_clipboard"):
+                self.app.copy_to_clipboard(code_text)
+                if hasattr(self.app, "notify"):
+                    self.app.notify("Code copied to clipboard!", title="Success", severity="information")
+            else:
+                try:
+                    # Fallback for Textual versions without copy_to_clipboard natively
+                    import pyperclip
+                    pyperclip.copy(code_text)
+                    if hasattr(self.app, "notify"):
+                        self.app.notify("Code copied to clipboard!", title="Success", severity="information")
+                except ImportError:
+                    if hasattr(self.app, "notify"):
+                        self.app.notify("Clipboard support requires pyperclip or newer Textual.", title="Error", severity="error")
+            event.stop()
+        elif event.button.has_class("markdown-save-button"):
+            code_text = getattr(self, "code", "")
+            language = getattr(self, "lexer", "")
+            
+            def handle_save(filename: Optional[str]) -> None:
+                if filename:
+                    try:
+                        with open(filename, "w", encoding="utf-8") as f:
+                            f.write(code_text)
+                        if hasattr(self.app, "notify"):
+                            self.app.notify(f"Saved to {filename}", title="Success", severity="information")
+                        else:
+                            # Fallback if no notify
+                            status_bar = self.app.query_one("#status-bar", StatusBar)
+                            if status_bar:
+                                status_bar.update_status(f"Saved snippet to {filename}", "success")
+                    except Exception as e:
+                        if hasattr(self.app, "notify"):
+                            self.app.notify(f"Error saving file: {e}", title="Error", severity="error")
+            
+            self.app.push_screen(SaveCodeModal(language=language), handle_save)
+            event.stop()
 
 
 class PyLumoMarkdown(Markdown):

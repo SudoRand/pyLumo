@@ -384,6 +384,91 @@ class SaveChatModal(ModalScreen[str]):
         self.dismiss(None)
 
 
+class SaveCodeModal(ModalScreen[str]):
+    """Modal screen to save code block to a file."""
+
+    BINDINGS = [
+        ("escape", "cancel", "Cancel"),
+    ]
+
+    def __init__(self, language: str = ""):
+        super().__init__()
+        self.language = language
+
+    def compose(self) -> ComposeResult:
+        """Create the save dialog."""
+        # Generate default filename based on language
+        ext_map = {
+            "python": "py", "py": "py",
+            "javascript": "js", "js": "js",
+            "typescript": "ts", "ts": "ts",
+            "html": "html",
+            "css": "css",
+            "json": "json",
+            "markdown": "md", "md": "md",
+            "bash": "sh", "sh": "sh", "shell": "sh",
+            "yaml": "yml", "yml": "yml",
+            "toml": "toml",
+            "sql": "sql",
+            "c": "c",
+            "cpp": "cpp", "c++": "cpp",
+            "rust": "rs", "rs": "rs",
+            "go": "go",
+            "java": "go",
+            "ruby": "rs",
+        }
+        
+        ext = ext_map.get(self.language.lower(), "txt")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        default_filename = f"code_snippet_{timestamp}.{ext}"
+
+        with Container(id="save-code-dialog"):
+            yield Static(
+                "[bold #9d4edd]Save Code Block[/]",
+                id="save-code-title",
+            )
+            yield Static(
+                "\nEnter filename to save code snippet:\n",
+                id="save-code-content",
+            )
+            yield Input(
+                value=default_filename,
+                placeholder=f"filename.{ext}",
+                id="save-code-filename-input",
+            )
+            with Horizontal(id="save-code-buttons"):
+                yield Button("Save", variant="primary", id="save-code-file-button")
+                yield Button("Cancel", variant="default", id="cancel-save-code-button")
+
+    def on_mount(self) -> None:
+        """Focus the input when modal opens."""
+        self.query_one("#save-code-filename-input", Input).focus()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle button press."""
+        if event.button.id == "save-code-file-button":
+            filename_input = self.query_one("#save-code-filename-input", Input)
+            filename = filename_input.value.strip()
+            if filename:
+                self.dismiss(filename)
+            else:
+                # Don't dismiss if filename is empty
+                pass
+        elif event.button.id == "cancel-save-code-button":
+            self.dismiss(None)
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        """Handle Enter key in input."""
+        if event.input.id == "save-code-filename-input":
+            filename = event.input.value.strip()
+            if filename:
+                self.dismiss(filename)
+
+    def action_cancel(self) -> None:
+        """Cancel save action."""
+        self.dismiss(None)
+
+
 class SaveDebugModal(ModalScreen[str]):
     """Modal screen to save debug output to a file."""
 

@@ -391,6 +391,72 @@ SaveChatModal {
     background: #ffed4e;
 }
 
+/* Save Code Modal Styles */
+SaveCodeModal {
+    align: center middle;
+}
+
+#save-code-dialog {
+    width: 60;
+    height: auto;
+    background: #0f0f1e;
+    border: thick #9d4edd;
+    padding: 2 4;
+}
+
+#save-code-title {
+    text-align: center;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#save-code-content {
+    margin-bottom: 1;
+    text-align: center;
+    color: #ffffff;
+}
+
+#save-code-filename-input {
+    width: 100%;
+    margin-bottom: 2;
+    background: #0f0f1e;
+    border: solid #9d4edd;
+    color: #ffffff;
+}
+
+#save-code-filename-input:focus {
+    border: solid #ffd60a;
+}
+
+#save-code-buttons {
+    width: 100%;
+    height: auto;
+    align: center middle;
+}
+
+#save-code-buttons Button {
+    margin: 0 1;
+    min-width: 15;
+}
+
+#save-code-file-button {
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+#save-code-file-button:hover {
+    background: #c77dff;
+}
+
+#cancel-save-code-button {
+    background: #ffd60a;
+    color: #1a1a2e;
+}
+
+#cancel-save-code-button:hover {
+    background: #ffed4e;
+}
+
 /* Save Debug Modal Styles */
 SaveDebugModal {
     align: center middle;
@@ -999,12 +1065,46 @@ MarkdownFence {
 }
 
 /* Style for the opening line indicating the language */
-.markdown-fence-language {
-    background: #ffd60a; /* Match the side-bar color */
-    color: #1a1a2e;      /* Dark text for contrast */
-    text-style: bold;
+.markdown-fence-header {
+    height: 1;
     width: 100%;
+    align: left middle;
+    background: #ffd60a;
+}
+
+.markdown-fence-language {
+    width: 1fr;
+    background: transparent;
+    color: #1a1a2e;
+    text-style: bold;
     padding: 0 1;
+}
+
+.markdown-action-button {
+    min-width: 10;
+    height: 1;
+    border: none;
+    margin: 0 1;
+}
+
+.markdown-copy-button {
+    background: #c77dff;
+    color: #ffffff;
+}
+
+.markdown-copy-button:hover, .markdown-copy-button:focus {
+    text-style: bold;
+    background: #9d4edd;
+}
+
+.markdown-save-button {
+    background: #240046;
+    color: #ffffff;
+}
+
+.markdown-save-button:hover, .markdown-save-button:focus {
+    text-style: bold;
+    background: #3c096c;
 }
 
 /* Provide padding for the actual code content */
