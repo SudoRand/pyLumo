@@ -16,7 +16,9 @@ from textual.widgets import (
     Markdown,
     Static,
     RichLog,
+    Label,
 )
+from textual.widgets._markdown import MarkdownFence
 from textual.containers import Container, Horizontal, VerticalScroll
 from textual.app import App, ComposeResult
 
@@ -1356,6 +1358,27 @@ class LoadingIndicator(Static):
         self.update(self.frames[self.frame])
 
 
+class CustomMarkdownFence(MarkdownFence):
+    """Custom Markdown code block that displays the language name."""
+    
+    def compose(self) -> ComposeResult:
+        # `self.lexer` contains the language string (e.g. "python", "json")
+        language = getattr(self, "lexer", "")
+        if language:
+            # Yield an opening line indicating the language
+            yield Label(f" {language} ", classes="markdown-fence-language")
+            
+        # Yield the actual highlighted code content
+        yield Label(self._highlighted_code, id="code-content")
+
+
+class PyLumoMarkdown(Markdown):
+    """Custom Markdown widget that uses our CustomMarkdownFence for code blocks."""
+    # Copy the default blocks map and override the 'fence' block
+    BLOCKS = dict(Markdown.BLOCKS)
+    BLOCKS["fence"] = CustomMarkdownFence
+
+
 class ChatContainer(VerticalScroll):
     """Container for chat messages."""
 
@@ -1426,7 +1449,7 @@ class ChatContainer(VerticalScroll):
                     self._render_markdown_with_images(content)
                 else:
                     # Add markdown widget without image support
-                    markdown_widget = Markdown(
+                    markdown_widget = PyLumoMarkdown(
                         content, classes="message assistant-message message-markdown"
                     )
                     self.mount(markdown_widget)
@@ -1477,7 +1500,7 @@ class ChatContainer(VerticalScroll):
             if i % 3 == 0:
                 # Regular text/markdown content
                 if parts[i].strip():
-                    markdown_widget = Markdown(parts[i])
+                    markdown_widget = PyLumoMarkdown(parts[i])
                     widgets.append(markdown_widget)
             elif i % 3 == 2:
                 # Image path (parts[i-1] is alt text, parts[i] is path)
@@ -1795,7 +1818,7 @@ class ChatContainer(VerticalScroll):
                     self._render_markdown_with_images(full_message)
                 else:
                     # Add markdown widget without image support
-                    markdown_widget = Markdown(
+                    markdown_widget = PyLumoMarkdown(
                         full_message,
                         classes="message assistant-message message-markdown",
                     )

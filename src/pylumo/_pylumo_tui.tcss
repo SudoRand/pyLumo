@@ -988,3 +988,32 @@ SplashScreenModal {
     color: #9d4edd;
     background: #000000;
 }
+
+/* Style for formatted code blocks (triple backticks) */
+MarkdownFence {
+    background: #0a0a14;
+    border-left: thick #ffd60a; /* Yellow side-bar */
+    margin: 1 2;
+    /* Ensure the code block is scrollable horizontally if lines are long */
+    overflow-x: auto; 
+}
+
+/* Style for the opening line indicating the language */
+.markdown-fence-language {
+    background: #ffd60a; /* Match the side-bar color */
+    color: #1a1a2e;      /* Dark text for contrast */
+    text-style: bold;
+    width: 100%;
+    padding: 0 1;
+}
+
+/* Provide padding for the actual code content */
+MarkdownFence > #code-content {
+    padding: 1 2;
+}
+
+/* Optional: distinct styling for inline code (single backticks) */
+MarkdownCode {
+    background: #0a0a14;
+    color: #ffd60a;
+}
