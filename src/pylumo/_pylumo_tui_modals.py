@@ -205,6 +205,51 @@ class AboutModal(ModalScreen):
         self.dismiss()
 
 
+class OverwriteConfirmModal(ModalScreen[bool]):
+    """Modal screen to confirm file overwrite."""
+
+    BINDINGS = [
+        ("escape", "cancel", "Cancel"),
+    ]
+
+    def __init__(self, filepath: str):
+        super().__init__()
+        self.filepath = filepath
+
+    def compose(self) -> ComposeResult:
+        """Create the confirmation dialog."""
+        filename = os.path.basename(self.filepath)
+        with Container(id="overwrite-confirm-dialog"):
+            yield Static(
+                "[bold #ffd60a]Confirm Overwrite[/]",
+                id="overwrite-confirm-title",
+            )
+            yield Static(
+                f"\nThe file [bold]{filename}[/] already exists.\n"
+                "Are you sure you want to overwrite it?\n\n"
+                "[dim]Press ESC or Enter to cancel[/]",
+                id="overwrite-confirm-content",
+            )
+            with Horizontal(id="overwrite-confirm-buttons"):
+                yield Button("Overwrite", variant="error", id="confirm-overwrite-button")
+                yield Button("Cancel", variant="primary", id="cancel-overwrite-button")
+
+    def on_mount(self) -> None:
+        """Focus the Cancel button when modal opens."""
+        self.query_one("#cancel-overwrite-button", Button).focus()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle button press."""
+        if event.button.id == "confirm-overwrite-button":
+            self.dismiss(True)  # User confirmed overwrite
+        elif event.button.id == "cancel-overwrite-button":
+            self.dismiss(False)  # User cancelled
+
+    def action_cancel(self) -> None:
+        """Cancel overwrite action."""
+        self.dismiss(False)
+
+
 class QuitConfirmModal(ModalScreen[bool]):
     """Modal screen to confirm quit action."""
 
@@ -394,6 +439,7 @@ class SaveCodeModal(ModalScreen[str]):
     def __init__(self, language: str = ""):
         super().__init__()
         self.language = language
+        self.current_path = os.path.abspath("./")
 
     def compose(self) -> ComposeResult:
         """Create the save dialog."""
@@ -414,10 +460,10 @@ class SaveCodeModal(ModalScreen[str]):
             "cpp": "cpp", "c++": "cpp",
             "rust": "rs", "rs": "rs",
             "go": "go",
-            "java": "go",
-            "ruby": "rs",
+            "java": "java",
+            "ruby": "rb",
         }
-        
+
         ext = ext_map.get(self.language.lower(), "txt")
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         default_filename = f"code_snippet_{timestamp}.{ext}"
@@ -427,6 +473,27 @@ class SaveCodeModal(ModalScreen[str]):
                 "[bold #9d4edd]Save Code Block[/]",
                 id="save-code-title",
             )
+
+            # Show hidden files by setting show_hidden=True
+            tree = DirectoryTree(self.current_path, id="save-code-file-tree")
+            tree.show_hidden = True
+            yield tree
+
+            # Add directory navigation section
+            yield Static(
+                "Navigate to directory:",
+                id="save-code-dir-nav-label",
+            )
+            with Horizontal(id="save-code-dir-nav-container"):
+                yield Input(
+                    placeholder="Enter directory path...",
+                    value=self.current_path,
+                    id="save-code-dir-path-input",
+                )
+                yield Button("Go", variant="default", id="save-code-go-dir-button")
+
+            yield Static("", id="save-code-dir-nav-status")
+
             yield Static(
                 "\nEnter filename to save code snippet:\n",
                 id="save-code-content",
@@ -444,30 +511,92 @@ class SaveCodeModal(ModalScreen[str]):
         """Focus the input when modal opens."""
         self.query_one("#save-code-filename-input", Input).focus()
 
+    def on_directory_tree_file_selected(self, event: DirectoryTree.FileSelected) -> None:
+        """Handle file selection to autofill the filename."""
+        filename_input = self.query_one("#save-code-filename-input", Input)
+        filename_input.value = os.path.basename(event.path)
+        # We don't auto-save, we just let them inspect/modify the name
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button press."""
         if event.button.id == "save-code-file-button":
-            filename_input = self.query_one("#save-code-filename-input", Input)
-            filename = filename_input.value.strip()
-            if filename:
-                self.dismiss(filename)
-            else:
-                # Don't dismiss if filename is empty
-                pass
+            self._save_file()
         elif event.button.id == "cancel-save-code-button":
             self.dismiss(None)
+        elif event.button.id == "save-code-go-dir-button":
+            self._navigate_to_directory()
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         """Handle Enter key in input."""
-        if event.input.id == "save-code-filename-input":
-            filename = event.input.value.strip()
-            if filename:
-                self.dismiss(filename)
+        if event.input.id == "save-code-dir-path-input":
+            self._navigate_to_directory()
+        elif event.input.id == "save-code-filename-input":
+            self._save_file()
+
+    def _save_file(self) -> None:
+        filename_input = self.query_one("#save-code-filename-input", Input)
+        filename = filename_input.value.strip()
+        if not filename:
+            return
+
+        tree = self.query_one("#save-code-file-tree", DirectoryTree)
+        target_dir = self.current_path
+
+        if tree.cursor_node and tree.cursor_node.data:
+            try:
+                node_path = tree.cursor_node.data.path
+                if os.path.isdir(node_path):
+                    target_dir = node_path
+                else:
+                    target_dir = os.path.dirname(node_path)
+            except Exception:
+                pass
+
+        full_path = os.path.join(target_dir, filename)
+        
+        if os.path.exists(full_path):
+            def handle_overwrite(confirmed: bool) -> None:
+                if confirmed:
+                    self.dismiss(full_path)
+            self.app.push_screen(OverwriteConfirmModal(full_path), handle_overwrite)
+        else:
+            self.dismiss(full_path)
+
+    def _navigate_to_directory(self) -> None:
+        """Navigate to the directory specified in the input."""
+        dir_input = self.query_one("#save-code-dir-path-input", Input)
+        status = self.query_one("#save-code-dir-nav-status", Static)
+        new_path = dir_input.value.strip()
+
+        if not new_path:
+            status.update("[red]Please enter a directory path[/]")
+            return
+
+        new_path = os.path.expanduser(new_path)
+        if not os.path.isabs(new_path):
+            new_path = os.path.abspath(new_path)
+
+        if not os.path.exists(new_path):
+            status.update(f"[red]Directory does not exist: {new_path}[/]")
+            return
+
+        if not os.path.isdir(new_path):
+            status.update(f"[red]Not a directory: {new_path}[/]")
+            return
+
+        try:
+            self.current_path = new_path
+            tree = self.query_one("#save-code-file-tree", DirectoryTree)
+            tree.path = self.current_path
+            tree.reload()
+            dir_input.value = self.current_path
+            status.update(f"[green]Navigated to: {self.current_path}[/]")
+        except Exception as e:
+            status.update(f"[red]Error navigating to directory: {str(e)}[/]")
 
     def action_cancel(self) -> None:
         """Cancel save action."""
         self.dismiss(None)
-
 
 class SaveDebugModal(ModalScreen[str]):
     """Modal screen to save debug output to a file."""

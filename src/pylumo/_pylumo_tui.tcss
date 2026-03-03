@@ -163,6 +163,60 @@ AboutModal {
     background: #c77dff;
 }
 
+/* Overwrite Confirm Modal Styles */
+OverwriteConfirmModal {
+    align: center middle;
+}
+
+#overwrite-confirm-dialog {
+    width: 50;
+    height: auto;
+    background: #0f0f1e;
+    border: thick #ff3333;
+    padding: 2 4;
+}
+
+#overwrite-confirm-title {
+    text-align: center;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#overwrite-confirm-content {
+    margin-bottom: 2;
+    text-align: center;
+    color: #ffffff;
+}
+
+#overwrite-confirm-buttons {
+    width: 100%;
+    height: auto;
+    align: center middle;
+}
+
+#overwrite-confirm-buttons Button {
+    margin: 0 1;
+    min-width: 15;
+}
+
+#confirm-overwrite-button {
+    background: #ff3333;
+    color: #ffffff;
+}
+
+#confirm-overwrite-button:hover {
+    background: #ff6666;
+}
+
+#cancel-overwrite-button {
+    background: #9d4edd;
+    color: #ffffff;
+}
+
+#cancel-overwrite-button:hover {
+    background: #c77dff;
+}
+
 /* Quit Confirm Modal Styles */
 QuitConfirmModal {
     align: center middle;
@@ -397,11 +451,12 @@ SaveCodeModal {
 }
 
 #save-code-dialog {
-    width: 60;
+    width: 80;
     height: auto;
+    max-height: 90%;
     background: #0f0f1e;
     border: thick #9d4edd;
-    padding: 2 4;
+    padding: 1 2;
 }
 
 #save-code-title {
@@ -410,9 +465,47 @@ SaveCodeModal {
     text-style: bold;
 }
 
+#save-code-file-tree {
+    height: 15;
+    border: solid #9d4edd;
+    margin-bottom: 1;
+}
+
+#save-code-dir-nav-label {
+    color: #ffd60a;
+    margin-top: 1;
+    margin-bottom: 0;
+}
+
+#save-code-dir-nav-container {
+    height: auto;
+    margin-bottom: 1;
+}
+
+#save-code-dir-path-input {
+    width: 1fr;
+    background: #0f0f1e;
+    border: solid #9d4edd;
+    color: #ffffff;
+}
+
+#save-code-dir-path-input:focus {
+    border: solid #ffd60a;
+}
+
+#save-code-go-dir-button {
+    margin-left: 1;
+}
+
+#save-code-dir-nav-status {
+    height: 1;
+    margin-bottom: 1;
+    text-align: left;
+}
+
 #save-code-content {
     margin-bottom: 1;
-    text-align: center;
+    text-align: left;
     color: #ffffff;
 }
 
